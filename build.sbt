@@ -18,6 +18,9 @@ scalaVersion := "2.13.1"
 // Want to use a published library in your project?
 // You can define other libraries as dependencies in your build like this:
 
+// https://mvnrepository.com/artifact/org.jsoup/jsoup
+libraryDependencies += "org.jsoup" % "jsoup" % "1.12.1"
+
 libraryDependencies += "co.fs2" %% "fs2-core" % "2.0.1"
 libraryDependencies += "co.fs2" %% "fs2-io" % "2.0.1"
 
