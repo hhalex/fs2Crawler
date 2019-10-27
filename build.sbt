@@ -18,6 +18,8 @@ scalaVersion := "2.13.1"
 // Want to use a published library in your project?
 // You can define other libraries as dependencies in your build like this:
 
+libraryDependencies += "com.github.nscala-time" %% "nscala-time" % "2.22.0"
+
 // https://mvnrepository.com/artifact/org.jsoup/jsoup
 libraryDependencies += "org.jsoup" % "jsoup" % "1.12.1"
 
