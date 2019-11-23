@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Crawling Exystence...</title>
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+</head>
+<body>
+<div>Downloading albums from exystence.net</div>
+<ul></ul>
+<script>
+    const evtSource = new EventSource('streamPosts');
+    const eventList = document.querySelector('ul');
+
+    let messagesList = [];
+
+    evtSource.onmessage = e => {
+        messagesList = [e.data, ...messagesList].slice(0, 10);
+
+        const updatedAlbums = d3.select("ul").selectAll("li").data(messagesList, d => d);
+
+        updatedAlbums
+            .enter()
+            .append("li")
+            .text(d => d)
+
+        updatedAlbums.text(d => d);
+
+        updatedAlbums
+            .exit()
+            .remove()
+    }
+</script>
+</body>
+</html>

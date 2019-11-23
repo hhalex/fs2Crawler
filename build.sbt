@@ -32,8 +32,10 @@ libraryDependencies += "org.typelevel" %% "cats-effect" % "2.0.0"
 libraryDependencies += "org.http4s" %% "http4s-core" % "0.21.0-M5"
 libraryDependencies += "org.http4s" %% "http4s-blaze-client" % "0.21.0-M5"
 libraryDependencies += "org.http4s" %% "http4s-blaze-server" % "0.21.0-M5"
+libraryDependencies += "org.http4s" %% "http4s-dsl" % "0.21.0-M5"
 libraryDependencies += "org.http4s" %% "http4s-dsl" % "0.21.0-M5" % Test
 
+libraryDependencies += "org.http4s" %% "http4s-circe" % "0.21.0-M5"
 
 // Here, `libraryDependencies` is a set of dependencies, and by using `+=`,
 // we're adding the cats dependency to the set of dependencies that sbt will go
