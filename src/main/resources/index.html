@@ -5,9 +5,15 @@
     <title>Crawling Exystence...</title>
     <script src="https://d3js.org/d3.v5.min.js"></script>
 </head>
-<body>
+<body style="margin:auto;width:800px">
 <div>Downloading albums from exystence.net</div>
-<ul></ul>
+<svg width=800 height=600 id="slidingAlbums" style="border:solid 1px black;">
+    <g>
+        <line stroke-dasharray="2, 5" x1="150" y1="0" x2="150" y2="600" style="stroke-width: 1px; stroke: rgb(99, 99, 99);"></line>
+    </g>
+    <g id="albumBullets" transform="translate(150, 0)"></g>
+
+</svg>
 <script>
     const evtSource = new EventSource('streamPosts');
     const eventList = document.querySelector('ul');
@@ -17,17 +23,34 @@
     evtSource.onmessage = e => {
         messagesList = [e.data, ...messagesList].slice(0, 10);
 
-        const updatedAlbums = d3.select("ul").selectAll("li").data(messagesList, d => d);
+        const updatedAlbums = d3.select("#albumBullets").selectAll("g").data(messagesList, d => d);
 
-        updatedAlbums
+        const enterGroup = updatedAlbums
             .enter()
-            .append("li")
-            .text(d => d)
+            .append("g")
+            .attr("height", "60px")
+            .attr("transform", "translate(0,-30)")
+            .attr("opacity", 0);
+        enterGroup
+            .append("circle")
+            .attr("stroke", "rgb(99, 99, 99)")
+            .attr("stroke-width", "5px")
+            .attr("fill", "white")
+            .attr("r", "10px")
+            .attr("x", "-10px")
+            .attr("fill-opacity","0.7");
+        enterGroup
+            .append("text")
+            .attr("x", "30")
+            .attr("font-family", "Arial")
+            .attr("dominant-baseline", "middle")
+            .text(d => d);
 
-        updatedAlbums.text(d => d);
+        updatedAlbums.merge(enterGroup).transition().duration(800).attr("opacity", 1).attr("transform", (d, i) =>  "translate(0,"+(30+i*60)+")");
 
         updatedAlbums
             .exit()
+            .transition().duration(800).attr("opacity", 0).attr("transform", "translate(0,630)")
             .remove()
     }
 </script>
