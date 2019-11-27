@@ -16,14 +16,14 @@
 </svg>
 <script>
     const evtSource = new EventSource('streamPosts');
-    const eventList = document.querySelector('ul');
 
     let messagesList = [];
 
     evtSource.onmessage = e => {
-        messagesList = [e.data, ...messagesList].slice(0, 10);
+        const parsedJson = JSON.parse(e.data);
+        messagesList = [parsedJson, ...messagesList].slice(0, 10);
 
-        const updatedAlbums = d3.select("#albumBullets").selectAll("g").data(messagesList, d => d);
+        const updatedAlbums = d3.select("#albumBullets").selectAll("g").data(messagesList, d => d.title);
 
         const enterGroup = updatedAlbums
             .enter()
@@ -44,7 +44,15 @@
             .attr("x", "30")
             .attr("font-family", "Arial")
             .attr("dominant-baseline", "middle")
-            .text(d => d);
+            .text(d => d.title);
+
+        enterGroup
+            .append("text")
+            .attr("x", "-30")
+            .attr("font-family", "Arial")
+            .attr("dominant-baseline", "middle")
+            .attr("text-anchor", "end")
+            .text(d => d.date);
 
         updatedAlbums.merge(enterGroup).transition().duration(800).attr("opacity", 1).attr("transform", (d, i) =>  "translate(0,"+(30+i*60)+")");
 

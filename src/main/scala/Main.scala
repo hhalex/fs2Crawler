@@ -6,6 +6,9 @@ import java.util.concurrent.TimeUnit
 import cats.effect.{Blocker, ExitCode, IO, IOApp}
 import cats.implicits._
 import com.github.nscala_time.time.Imports._
+import io.circe._
+import io.circe.syntax._
+import io.circe.generic.semiauto._
 import org.http4s._
 import org.http4s.client.blaze.BlazeClientBuilder
 import org.http4s.client.middleware.FollowRedirect
@@ -17,6 +20,7 @@ import org.jsoup.Jsoup
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.FiniteDuration
 import scala.jdk.CollectionConverters._
+import scala.util.{Success, Try}
 
 case class BlogPost(title: String,
                     date: DateTime,
@@ -26,7 +30,7 @@ case class BlogPost(title: String,
                     tags: Seq[String])
 
 object ExtractInfos {
-  def apply(html: String, uri: Uri) = {
+  def apply(html: String, uri: Uri) = Try {
     val detailedPage = Jsoup
       .parse(html)
     val postTitle =
@@ -122,10 +126,18 @@ object Main extends IOApp {
 
       })
 
+    implicit val dateTimeEncoder: Encoder[DateTime] = Encoder.instance {
+      _.toString(DateTimeFormat.shortDate()).asJson
+    }
+    implicit val uriEncoder: Encoder[Uri] = Encoder.instance {
+      _.toString().asJson
+    }
+    implicit val blogPostEncoder: Encoder[BlogPost] = deriveEncoder[BlogPost]
+
     val app = HttpRoutes
       .of[IO] {
         case Method.GET -> Root / "streamPosts" => {
-          Ok(blogPostStream.map(b => ServerSentEvent(b.title)))
+          Ok(blogPostStream.collect({ case Success(v) => v }).map(blogPost => ServerSentEvent(blogPost.asJson.noSpaces)))
         }
         case r @ Method.GET -> Root =>
           StaticFile
